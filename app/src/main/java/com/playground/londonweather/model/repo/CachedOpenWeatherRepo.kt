@@ -21,8 +21,9 @@ class CachedOpenWeatherRepo(
         } else {
             conditionsDao.load(city)
         }.map { it.toEntity() }
-                .switchIfEmpty(originalRepo.conditionsIn(city))
-                .doAfterSuccess { conditionsDao.insertOrUpdate(it.toModel(city)) }
+                .switchIfEmpty(originalRepo.conditionsIn(city).doAfterSuccess {
+                    conditionsDao.insertOrUpdate(it.toModel(city))
+                })
     }
 
     private fun Conditions.toModel(city: String): ConditionsModel {
